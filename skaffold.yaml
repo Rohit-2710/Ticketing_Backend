@@ -1,0 +1,20 @@
+apiVersion: skaffold/v4beta3
+kind: Config
+manifests:
+  rawYaml:
+    - ./infra/k8s/*
+build: 
+  local:
+    push: false
+  artifacts:
+    - image: lastenigma2710/auth_service
+      context: auth
+      docker:
+        dockerfile: Dockerfile
+      sync:
+        manual:
+          - src: "src/**/*.ts"
+            dest: .
+  
+
+ 
