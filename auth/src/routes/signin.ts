@@ -1,8 +1,10 @@
 import express, { Request, Response } from "express";
-import { body, validationResult } from "express-validator";
+import { body } from "express-validator";
+import { validateRequest } from "../middlewares/validate-request";
 import { User } from "../models/user";
-import { RequestValidationError } from "../errors/request-validation-errors";
 import { BadRequestError } from "../errors/bad-request-error";
+import { Password } from "../services/password";
+import jwt from "jsonwebtoken";
 
 const router = express.Router();
 
@@ -12,22 +14,30 @@ router.post(
     body("email").isEmail().withMessage("Email must be valid"),
     body("password")
       .trim()
-      .isLength({ min: 4, max: 20 })
-      .withMessage("Password must be between 4 and 20 characters"),
+      .notEmpty()
+      .withMessage("You must supply a password"),
+    validateRequest,
   ],
   async (req: Request, res: Response) => {
-    const errors = validationResult(req);
-    if (!errors.isEmpty()) {
-      throw new RequestValidationError(errors.array());
-    }
     const { email, password } = req.body;
-    const existing = await User.findOne({ email });
-    if (existing) {
-      throw new BadRequestError("Email in use");
+    const existingUser = await User.findOne({ email });
+    if (!existingUser) {
+      throw new BadRequestError("Invalid credentials");
     }
-    const user = User.build({ email, password });
-    await user.save();
-    res.status(200).send(user);
+    const passwordMatch = await Password.compare(
+      existingUser.password,
+      password
+    );
+    if (!passwordMatch) {
+      throw new BadRequestError("Invalid credentials");
+    }
+    req.session = {
+      jwt: jwt.sign(
+        { id: existingUser.id, email: existingUser.email },
+        process.env.JWT_KEY!
+      ),
+    };
+    res.status(200).send(existingUser);
   }
 );
 
