@@ -15,6 +15,12 @@ spec:
       containers:
         - name: auth
           image: lastenigma2710/auth_service:0.0.1
+          env:
+            - name: JWT_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: jwt-secret
+                  key: JWT_KEY
           resources:
             limits:
               memory: "512Mi"
