@@ -9,8 +9,7 @@ import { singupRouter } from "./routes/signup";
 import { singinRouter } from "./routes/signin";
 import { signoutRouter } from "./routes/signout";
 
-import { errorHandler } from "./middlewares/error-handler";
-import { NotFoundError } from "./errors/not-found-error";
+import { errorHandler, NotFoundError } from "@tickets2710/common";
 
 import { Request, Response, NextFunction } from "express";
 
