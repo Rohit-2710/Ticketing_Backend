@@ -3,7 +3,7 @@ kind: Config
 manifests:
   rawYaml:
     - ./infra/k8s/*
-build: 
+build:
   local:
     push: false
   artifacts:
@@ -15,5 +15,11 @@ build:
         manual:
           - src: "src/**/*.ts"
             dest: .
-  
-
+    - image: lastenigma2710/ticket_service
+      context: ticket
+      docker:
+        dockerfile: Dockerfile
+      sync:
+        manual:
+          - src: "src/**/*.ts"
+            dest: .
