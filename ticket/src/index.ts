@@ -4,14 +4,20 @@ import { json } from "body-parser";
 import mongoose from "mongoose";
 import cookieSession from "cookie-session";
 
-import { errorHandler, NotFoundError } from "@tickets2710/common";
+import { errorHandler, NotFoundError, currentUser } from "@tickets2710/common";
 
 import { Request, Response, NextFunction } from "express";
+
+import { createTicketRouter } from "./routes/new";
 
 const app = express();
 app.set("trust proxy", true);
 app.use(json());
 app.use(cookieSession({ signed: false, secure: true }));
+
+app.use(currentUser);
+
+app.use(createTicketRouter);
 
 app.all("*", async () => {
   throw new NotFoundError();

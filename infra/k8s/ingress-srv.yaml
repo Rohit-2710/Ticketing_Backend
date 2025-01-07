@@ -17,10 +17,10 @@ spec:
                 name: auth-srv
                 port:
                   number: 3000
-          - path: /api/ticket/?(.*)
+          - path: /api/tickets/?(.*)
             pathType: Prefix
             backend:
               service:
                 name: ticket-srv
                 port:
-                  number: 3001
+                  number: 3000
